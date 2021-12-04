@@ -108,19 +108,22 @@ class Environment:
         self.viewer = MjViewer(self.sim)
         self.reset_state = self.sim.get_state()
         self.SPEED = 5
-        self.VISION_DIST = 1.5
+        self.VISION_DIST = 2
         self.destination = [2, 2] #I just randomly chose this
         self.discovered = False
         self.timestep = 0
-        self.MAX_TIMESTEP = 5000
+        self.MAX_TIMESTEP = 10000
 
         #timestep too short for random motion to learn
         #so I step TIME_INC times before next try
-        self.TIME_INC = 30
+        self.TIME_INC = 20
+        self.RANDOMIZE = 200
 
         self.target_previous = np.float32(np.concatenate((self.sim.data.get_body_xpos("target")[:2],
                                 self.sim.data.get_body_xvelp("target")[:2]),axis=0))
 
+        self.min_dist_to_dest = self.dist(self.target_previous[:2], self.destination)                        
+        
     #helper function in a class
     @staticmethod
     def dist(x, y): #x and y should be the same length
@@ -146,7 +149,7 @@ class Environment:
                 self.sim.data.ctrl[i*2] = 0
                 self.sim.data.ctrl[i*2+1] = -1 * self.SPEED
 
-        for i in range(1000):
+        for i in range(self.RANDOMIZE):
             self.sim.step()
 
 
@@ -210,32 +213,45 @@ class Environment:
 
         target_to_dest = self.dist(target[:2], self.destination)
 
-        reward = -.01
-
-        
+        reward1 = -.05
+        reward2 = -.05
+        reward3 = -.05
+        reward4 = -.05
 
         if agent1_dist < self.VISION_DIST or agent2_dist < self.VISION_DIST or agent3_dist < self.VISION_DIST or agent4_dist < self.VISION_DIST:
             if self.discovered == False: # I have this condition so we reward finding the target the first time.
                 self.discovered = True
             #make it so more agents close to object is better
             if agent1_dist < self.VISION_DIST:
-                reward += .05
+                reward1 += (self.VISION_DIST - agent1_dist)/10
             if agent2_dist < self.VISION_DIST:
-                reward += .05
+                reward2 += (self.VISION_DIST - agent2_dist)/10
             if agent3_dist < self.VISION_DIST:
-                reward += .05
+                reward3 += (self.VISION_DIST - agent3_dist)/10
             if agent4_dist < self.VISION_DIST:
-                reward += .05
+                reward4 += (self.VISION_DIST - agent4_dist)/10
 
         if self.discovered == True: # Once we've found the target once, we will always know its location.
             observation["target"] = target
             previous_target_to_dest = self.dist(self.target_previous[:2], self.destination)
             
             #when we get closer we get reward
+            #don't punish for moving away
+            # potential_reward = 0
+            # if target_to_dest < self.min_dist_to_dest:
+            #     potential_reward = (self.min_dist_to_dest - target_to_dest) * 100
+            #     self.min_dist_to_dest = target_to_dest
             #when target_to dest gets further away, we get negative reward
-            # print('previous_target_to_dest: {}'.format(previous_target_to_dest))
-            # print('target_to_dest: {}'.format(target_to_dest))
-            reward += (previous_target_to_dest - target_to_dest) * 100
+            potential_reward = (previous_target_to_dest - target_to_dest) * 100
+
+            if agent1_dist < .75:
+                reward1 += potential_reward
+            if agent2_dist < .75:
+                reward2 += potential_reward
+            if agent3_dist < .75:
+                reward3 += potential_reward
+            if agent4_dist < .75:
+                reward4 += potential_reward
         else:
             #Random out of bounds location.
             #Agent will have to learn that to ignore -100 -100 until the position is found.
@@ -245,14 +261,25 @@ class Environment:
 
         if target_to_dest < 0.5:
             done = True
-            reward += 100
+            print('A PERSON HAS BEEN SAVED WOOHOO!')
+            #Final reward set for 2 reasons
+            #1. Too large too sudden. I think it is messing up learning
+            #2. Need some small bonus to encourage finishing before times up
+            if agent1_dist < self.VISION_DIST:
+                reward1 += 30
+            if agent2_dist < self.VISION_DIST:
+                reward2 += 30
+            if agent3_dist < self.VISION_DIST:
+                reward3 += 30
+            if agent4_dist < self.VISION_DIST:
+                reward4 += 30
 
         if(self.timestep > self.MAX_TIMESTEP):
             done = True
 
         self.target_previous = target
 
-        return observation, reward, done, {} #If we need debug info we can put it here.
+        return observation, [reward1, reward2, reward3, reward4], done, {} #If we need debug info we can put it here.
         
         
     def render(self):

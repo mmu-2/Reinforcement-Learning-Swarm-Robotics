@@ -74,22 +74,22 @@
         
         <!-- <body pos="0 0 0"> -->
         <geom type="box" size="5 5 .01" rgba="0 0 0 .1"/>
-        <body name="agent1" pos="2 -1.5 0">
+        <body name="agent1" pos="-1.5 -2 0">
             <geom class='bot' pos='0 0 .11'/>
             <joint name='slide1x' type='slide' pos='1 0 .11' axis='1 0 0' range='-50 50'/>
             <joint name='slide1y' type='slide' pos='1 0 .11' axis='0 1 0' range='-50 50'/>
         </body>
-        <body name="agent2" pos="2 -.5 0">
+        <body name="agent2" pos="-0.5 -2 0">
             <geom class='bot' pos='0 0 .11'/>
             <joint name='slide2x' type='slide' pos='2 0 .11' axis='1 0 0' range='-50 50'/>
             <joint name='slide2y' type='slide' pos='2 0 .11' axis='0 1 0' range='-50 50'/>
         </body>
-        <body name="agent3" pos="2 .5 0">
+        <body name="agent3" pos="0.5 -2 0">
             <geom class='bot' pos='0 0 .11'/>
             <joint name='slide3x' type='slide' pos='3 0 .11' axis='1 0 0' range='-50 50'/>
             <joint name='slide3y' type='slide' pos='3 0 .11' axis='0 1 0' range='-50 50'/>
         </body>
-        <body name="agent4" pos="2 1.5 0">
+        <body name="agent4" pos="1.5 -2 0">
             <geom class='bot' pos='0 0 .11'/>
             <joint name='slide4x' type='slide' pos='4 0 .11' axis='1 0 0' range='-50 50'/>
             <joint name='slide4y' type='slide' pos='4 0 .11' axis='0 1 0' range='-50 50'/>

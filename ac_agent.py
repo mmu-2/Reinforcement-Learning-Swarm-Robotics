@@ -17,23 +17,27 @@ class actor_critic_nn(nn.Module):
 
         #Current agent, agent2, agent3, agent4, target
         # self.fc1_critic = nn.Linear(20, 256)
-        self.fc1_critic = nn.Linear(8, 256)
-        self.fc2_critic = nn.Linear(256, 256)
-        self.fc3_critic = nn.Linear(256, 1)
+        self.fc1_critic = nn.Linear(8, 32)
+        self.fc2_critic = nn.Linear(32, 32)
+        self.fc3_critic = nn.Linear(32, 32)
+        self.fc4_critic = nn.Linear(32, 1)
 
         # self.fc1_actor = nn.Linear(20, 256)
-        self.fc1_actor = nn.Linear(8, 256)
-        self.fc2_actor = nn.Linear(256, 256)
-        self.fc3_actor = nn.Linear(256, 5) #nop, left, right, up, down
+        self.fc1_actor = nn.Linear(8, 32)
+        self.fc2_actor = nn.Linear(32, 32)
+        self.fc3_actor = nn.Linear(32, 32)
+        self.fc4_actor = nn.Linear(32, 5) #nop, left, right, up, down
 
     def forward(self, x):
         val = F.relu(self.fc1_critic(x))
         val = F.relu(self.fc2_critic(val))
-        val = self.fc3_critic(val)
+        val = F.relu(self.fc3_critic(val))
+        val = self.fc4_critic(val)
 
         pol = F.relu(self.fc1_actor(x))
         pol = F.relu(self.fc2_actor(pol))
-        pol = F.softmax(self.fc3_actor(pol), dim=0)
+        pol = F.relu(self.fc3_actor(pol))
+        pol = F.softmax(self.fc4_actor(pol), dim=0)
 
         return val, pol
 
