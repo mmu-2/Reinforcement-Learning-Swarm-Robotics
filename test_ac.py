@@ -17,6 +17,7 @@ for i in range(N_AGENTS):
 
 for i in range(len(agents)):
     agents[i].load('best-agent{}'.format(i+1))
+    # agents[i].load('agent{}-checkpoint6942'.format(i+1))
 
 y_rewards = list()
 y_average = list()

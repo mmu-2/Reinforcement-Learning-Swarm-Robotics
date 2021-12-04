@@ -25,7 +25,7 @@ window = list()
 last_100_average = 0
 average_reward = 0
 i_episode = 0
-while last_100_average < 250:
+while last_100_average < 300:
     i_episode += 1
     episode_reward = 0
     observation = env.reset()
