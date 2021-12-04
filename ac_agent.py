@@ -16,11 +16,13 @@ class actor_critic_nn(nn.Module):
         super(actor_critic_nn,self).__init__()
 
         #Current agent, agent2, agent3, agent4, target
-        self.fc1_critic = nn.Linear(20, 256)
+        # self.fc1_critic = nn.Linear(20, 256)
+        self.fc1_critic = nn.Linear(8, 256)
         self.fc2_critic = nn.Linear(256, 256)
         self.fc3_critic = nn.Linear(256, 1)
 
-        self.fc1_actor = nn.Linear(20, 256)
+        # self.fc1_actor = nn.Linear(20, 256)
+        self.fc1_actor = nn.Linear(8, 256)
         self.fc2_actor = nn.Linear(256, 256)
         self.fc3_actor = nn.Linear(256, 5) #nop, left, right, up, down
 
@@ -45,11 +47,11 @@ class ac_agent:
 
         self.ac = actor_critic_nn()
 
-        self.alpha = .0005 #for now, 1 learning rate. May need 2 if doesn't converge
+        self.alpha = .001 #for now, 1 learning rate. May need 2 if doesn't converge
         self.gamma = .99
 
-        #self.ac_optimizer = optim.AdamW(self.ac.parameters(), lr=self.alpha)
-        self.ac_optimizer = optim.SGD(self.ac.parameters(), lr=self.alpha)
+        self.ac_optimizer = optim.AdamW(self.ac.parameters(), lr=self.alpha)
+        # self.ac_optimizer = optim.SGD(self.ac.parameters(), lr=self.alpha)
         self.ac_criterion = nn.MSELoss()
 
         self.states = []
@@ -69,7 +71,10 @@ class ac_agent:
         torch.save(self.ac.state_dict(), './models/{}-ac-weights.pth'.format(filename))
 
     def step(self, observation):
-        _, policy_dist = self.ac(torch.from_numpy(observation))
+        vals , policy_dist = self.ac(torch.from_numpy(observation))
+        # if self.debug == True:
+        #     print(vals)
+        #     print(policy_dist)
         action = np.random.choice(5, p=policy_dist.detach().numpy())
         return action
 
@@ -82,7 +87,7 @@ class ac_agent:
         self.dones.append(done)
 
         value, probs = self.ac(torch.from_numpy(last_observation))
-        value = value.detach().numpy()
+        # value = value.detach().numpy()
         self.values.append(value)
         self.logs.append(torch.log(probs[action]))
 
@@ -100,24 +105,34 @@ class ac_agent:
         
 
     def update(self, last_observation, action, reward, observation, done):
+
+        values = self.values
+        values = torch.stack(values, dim=0)
+        values = values.squeeze()
         
-        target, _ = self.ac(torch.from_numpy(observation))
-        target = target.detach().numpy()[0]
-        targets = np.zeros_like(self.values)
+        # target, _ = self.ac(torch.from_numpy(observation))
+        # target = target.detach().numpy()[0]
+        target = torch.tensor(0).detach().numpy()
+        targets = np.zeros_like(values.detach().numpy())
         for t in reversed(range(len(self.values))):
             target = self.rewards[t] + self.gamma * target
             targets[t] = target
         
-        values = [torch.from_numpy(v).float() for v in self.values]
-        values = torch.stack(values,dim=0)
-        values = values.squeeze()
+        # values = [torch.from_numpy(v).float() for v in self.values]
+        # values = torch.stack(values,dim=0)
+        # values = values.squeeze()
 
         targets = torch.from_numpy(targets).squeeze().float()
+        advantages = targets - values.detach()
 
         logs = torch.stack(self.logs)
         
-        actor_objective = (-logs * targets).mean()
+        # actor_objective = (-logs * targets).mean()
+        actor_objective = (-logs * advantages).mean()
         critic_loss = self.ac_criterion(targets, values)
+        # print('t:{}'.format(targets))
+        # print('v:{}'.format(values))
+        # print('l:{}'.format(critic_loss))
 
         objective = actor_objective + critic_loss
         self.ac_optimizer.zero_grad()
