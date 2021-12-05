@@ -18,7 +18,7 @@ config = {
     "RESET_WEIGHT_COUNTER" : 100,
     "TRAIN_TIMESTEPS" : 3, # 10
     "GAMMA" : 0.99, # lower gamma
-    "MINIMUM_EXPLORATION_PROBABILITY" : 0.1,
+    "MINIMUM_EXPLORATION_PROBABILITY" : 0.01,
     "MAXIMUM_EXPLORATION_PROBABILITY" : 1,
     "EXPLORATION_PROBABILITY" : 1,
     "EPSILON_DECAY" : 0.005,
@@ -36,9 +36,9 @@ class dqn_nn(nn.Module):
 
         # self.fc1_actor = nn.Linear(20, 256)
         self.fc1 = nn.Linear(8, 32)
-        self.fc2 = nn.Linear(32, 128)
-        self.fc3 = nn.Linear(128, 256)
-        self.fc4 = nn.Linear(256, 5)  # nop, left, right, up, down
+        self.fc2 = nn.Linear(32, 32)
+        self.fc3 = nn.Linear(32, 32)
+        self.fc4 = nn.Linear(32, 5)  # nop, left, right, up, down
 
     def forward(self, x):
         pol = F.relu(self.fc1(x))
