@@ -25,6 +25,33 @@ window = list()
 last_100_average = 0
 average_reward = 0
 i_episode = 0
+
+load_checkpoint = False #just manually set this
+
+if load_checkpoint == True:
+    #additional checkpoint data so I can reload and start from a later checkpoint
+    file = open("./ac_training_data/window", "rb")
+    window = pickle.load(file)
+    file.close()
+    file = open("./ac_training_data/data", "rb")
+    [average_reward, i_episode] = pickle.load(file)
+    file.close()
+    #graph-related data            
+    file = open("./ac_training_data/rewards", "rb")
+    y_rewards = pickle.load(file)
+    file.close()
+    file = open("./ac_training_data/last100average", "rb")
+    y_100 = pickle.load(file)
+    file.close()
+    file = open("./ac_training_data/running_average", "rb")
+    y_average = pickle.load(file)
+    file.close()
+    file = open("./ac_training_data/episodes", "rb")
+    x_axis = pickle.load(file)
+    file.close()
+    for i in range(len(agents)):
+        agents[i].load('agent{}-checkpoint{}'.format(i+1,i_episode))
+
 while last_100_average < 300:
     i_episode += 1
     episode_reward = 0
@@ -116,7 +143,16 @@ while last_100_average < 300:
                 y_100.append(last_100_average)
                 y_average.append(average_reward)
                 x_axis.append(i_episode)
-                
+
+                #additional checkpoint data so I can reload and start from a later checkpoint
+                file = open("./ac_training_data/window", "wb")
+                pickle.dump(window, file)
+                file.close()
+                data = [average_reward, i_episode]
+                file = open("./ac_training_data/data", "wb")
+                pickle.dump(data, file)
+                file.close()
+                #graph-related data
                 file = open("./ac_training_data/rewards", "wb")
                 pickle.dump(y_rewards, file)
                 file.close()
