@@ -16,8 +16,8 @@ for i in range(N_AGENTS):
     agents.append(ac_agent())
 
 for i in range(len(agents)):
-    agents[i].load('best-agent{}'.format(i+1))
-    # agents[i].load('agent{}-checkpoint6942'.format(i+1))
+    # agents[i].load('best-agent{}'.format(i+1))
+    agents[i].load('agent{}-checkpoint14041'.format(i+1))
 
 y_rewards = list()
 y_average = list()
@@ -28,7 +28,7 @@ window = list()
 last_100_average = 0
 average_reward = 0
 i_episode = 0
-while i_episode <= 10:
+while i_episode <= 9:
     i_episode += 1
     episode_reward = 0
     observation = env.reset()
@@ -62,9 +62,9 @@ while i_episode <= 10:
         rewards3 += rewards[2]
         rewards4 += rewards[3]
 
-        if i_episode % 100 == 0:
-            dist = env.dist(env.target_previous[:2], env.destination)
-            print('{:.3f} | {:.3f} | {:.3f} | {:.3f} | {:.3f}'.format(rewards1, rewards2, rewards3, rewards4, dist))
+        # if i_episode % 100 == 0:
+        #     dist = env.dist(env.target_previous[:2], env.destination)
+        #     print('{:.3f} | {:.3f} | {:.3f} | {:.3f} | {:.3f}'.format(rewards1, rewards2, rewards3, rewards4, dist))
 
         obs1 = np.array(observation["agent1"])
         obs2 = np.array(observation["agent2"])
