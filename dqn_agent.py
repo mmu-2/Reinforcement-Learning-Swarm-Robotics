@@ -24,7 +24,7 @@ config = {
     "EPSILON_DECAY" : 0.005,
     "MAX_TIMESTEPS": 15,
     "NO_EPISODES_TRAINING": 7000,
-    "LEARNING_RATE": 0.001
+    "LEARNING_RATE": 0.0005
 }
 
 
