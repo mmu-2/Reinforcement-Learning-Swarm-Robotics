@@ -16,8 +16,9 @@ for i in range(N_AGENTS):
     agents.append(dqn_agent())
 
 for i in range(len(agents)):
-    agents[i].load('best-agent{}'.format(i + 1))
-    # agents[i].load('agent{}-checkpoint6942'.format(i+1))
+    #agents[i].load('best-agent{}'.format(i + 1))
+    agents[i].load('agent{}-checkpoint461'.format(i+1))
+    agents[i].exploration_probability = 0
 
 y_rewards = list()
 y_average = list()
@@ -28,6 +29,7 @@ window = list()
 last_100_average = 0
 average_reward = 0
 i_episode = 0
+
 while i_episode <= 10:
     i_episode += 1
     episode_reward = 0
@@ -88,6 +90,7 @@ while i_episode <= 10:
                                                                                                    average_reward,
                                                                                                    last_100_average,
                                                                                                    episode_reward))
+                print(f"Epsilon Decay  {agents[0].exploration_probability}")
                 y_rewards.append(episode_reward)
                 y_100.append(last_100_average)
                 y_average.append(average_reward)

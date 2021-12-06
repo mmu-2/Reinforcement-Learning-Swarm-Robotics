@@ -55,7 +55,7 @@ class dqn_agent:
 
         self.current_state = np.zeros(4)
 
-        self.dqn = dqn_nn()
+        # self.dqn = dqn_nn()
 
         # self.alpha = .001  # for now, 1 learning rate. May need 2 if doesn't converge
         # self.gamma = .99
@@ -89,10 +89,10 @@ class dqn_agent:
         self.optimizer = optim.Adam(self.q_values.parameters(), lr=self.config["LEARNING_RATE"]) # 0.01
 
     def load(self, filename):
-        self.dqn.load_state_dict(torch.load('./models/{}-dqn-weights.pth'.format(filename)))
+        self.q_values.load_state_dict(torch.load('./models/{}-dqn-weights.pth'.format(filename)))
 
     def save(self, filename):
-        torch.save(self.dqn.state_dict(), './models/{}-dqn-weights.pth'.format(filename))
+        torch.save(self.q_values.state_dict(), './models/{}-dqn-weights.pth'.format(filename))
 
     def step(self, observation):
         # vals, policy_dist = self.ac(torch.from_numpy(observation))
