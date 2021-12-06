@@ -16,8 +16,8 @@ for i in range(N_AGENTS):
     agents.append(dqn_agent())
 
 for i in range(len(agents)):
-    #agents[i].load('best-agent{}'.format(i + 1))
-    agents[i].load('agent{}-checkpoint461'.format(i+1))
+    agents[i].load('best-agent{}'.format(i + 1))
+    # agents[i].load('agent{}-checkpoint461'.format(i+1))
     agents[i].exploration_probability = 0
 
 y_rewards = list()
